@@ -12,15 +12,18 @@ def generate_diagonal_matrix(k_min: float, k_max: float, n: int):
     return np.diag(eigenvalues)
 
 
+def quadratic_function(A):
+    return lambda x: x.T @ A @ x
+
+
+def gradient(A):
+    return lambda x: 2 * A @ x
+
+
 def generate_quadratic(n: int, k: int):
     k_min = np.random.uniform(1, np.sqrt(k))
     k_max = k * k_min
     D = generate_diagonal_matrix(k_min, k_max, n)
     T = generate_random_orthogonal_matrix(n)
-    T_transp = np.transpose(T)
-    A = np.matmul(np.matmul(T, D), T_transp)
-    # Осталось написать функции для создания квадратуры и её градиента
-
-
-
-generate_quadratic(3, 5)
+    A = np.matmul(np.matmul(T, D), np.transpose(T))
+    return quadratic_function(A), gradient(A)
