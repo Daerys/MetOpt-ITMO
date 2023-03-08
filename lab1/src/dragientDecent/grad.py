@@ -1,35 +1,46 @@
 import numpy as np
-import src.generator.quadratic_form_generator as g
 
 
 class GradientDescent:
     def __init__(self, learning_rate='constant',
                  stop_criteria='max_iter',
                  function=None,
-                 grad_function=None,
-                 eps=1e-4,
-                 start_point=None):
+                 grad_function=None):
+
         self.fun = function
         self.grad_fun = grad_function
-        self.eps = eps
-        self.x = start_point
+
+        self.eps = 1e-4
+        self.x = None
+        self.learning_rate = 10
         self.grad_iter = 0
+        self.learning_rate_iter = 0
+
         if stop_criteria == 'max_iter':
             self.max_iter = 1e1
             self.stop = self.max_iter_function
-        else:
+        elif stop_criteria == 'gradient':
             self.stop = self.norm
-        if learning_rate == 'constant':
-            self.learning_rate = 10
-            self.dlr = self.const_step
         else:
-            self.learning_rate_iter = 0
-            self.dlr = self.dich
+            raise ValueError("Invalid stop criteria algorithm")
 
-    def change_max_iter(self, max_iter):
+        if learning_rate == 'constant':
+            self.dlr = self.const_step
+        elif learning_rate == 'dichotomy':
+            self.dlr = self.dichotomy
+        else:
+            raise ValueError("Invalid learning rate algorithm")
+
+    def set_start_point(self, start_point: np.array):
+        self.x = start_point
+
+    def set_epsilon(self, epsilon: float):
+        self.eps = epsilon
+
+    def change_max_iter(self, max_iter: int):
         self.max_iter = max_iter
 
-    def change_learning_rate(self, learning_rate):
+    def change_learning_rate(self, learning_rate: float):
         self.learning_rate = learning_rate
 
     def max_iter_function(self):
@@ -41,7 +52,7 @@ class GradientDescent:
     def const_step(self):
         self.learning_rate = self.learning_rate / 2
 
-    def dich(self):
+    def dichotomy(self):
 
         approximation_resolution = 5e-2
         left = 1e-10  # min learning rate
@@ -74,16 +85,3 @@ class GradientDescent:
             self.grad_iter = self.grad_iter + 1
         points = np.array(points)
         print(points)
-
-
-if __name__ == '__main__':
-    f, gr = g.generate_quadratic(3, 1)
-    a = GradientDescent('dichotomy',
-                        'max_iter',
-                        f,
-                        gr,
-                        1e-4,
-                        [0, 0, 0])
-    a.change_learning_rate(50)
-    a.change_learning_rate(4)
-    a.gradient()
