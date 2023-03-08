@@ -12,7 +12,7 @@ class GradientDescent:
 
         self.eps = 1e-4
         self.x = None
-        self.learning_rate = 10
+        self.learning_rate = 1
         self.grad_iter = 0
         self.learning_rate_iter = 0
 
