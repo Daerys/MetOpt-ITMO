@@ -12,12 +12,16 @@ def generate_diagonal_matrix(k_min: float, k_max: float, n: int):
     return np.diag(eigenvalues)
 
 
-def quadratic_function(A):
-    return lambda x: x.T @ A @ x
+def quadratic_function(A, x0):
+    return lambda x: np.transpose(x - x0) @ A @ (x - x0)
 
 
-def gradient(A):
-    return lambda x: 2 * A @ x
+def gradient(A, x0):
+    def grad(x):
+        x = np.array(x)
+        return 2 * A @ (x - x0)
+
+    return grad
 
 
 def generate_quadratic(n: int, k: int):
@@ -26,4 +30,11 @@ def generate_quadratic(n: int, k: int):
     D = generate_diagonal_matrix(k_min, k_max, n)
     T = generate_random_orthogonal_matrix(n)
     A = np.matmul(np.matmul(T, D), np.transpose(T))
-    return quadratic_function(A), gradient(A)
+
+    x0 = np.random.uniform(-5, 5)
+    return quadratic_function(A, x0), gradient(A, x0)
+
+
+if __name__ == '__main__':
+    f, f_grad = generate_quadratic(3, 1)
+    print(f([0, 0, 0]))
