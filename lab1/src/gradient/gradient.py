@@ -9,7 +9,7 @@ def grad():
 
 
 def gradient_descent(x, gradient, learning_rate, iterations):
-    points = np.zeros((iterations, len(x)))
+    points = np.zeros((iterations, x.shape))
     points[0] = x
     for i in range(1, iterations):
         x -= int(learning_rate) * np.array(gradient(x))
