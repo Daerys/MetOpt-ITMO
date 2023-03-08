@@ -1,5 +1,5 @@
 import numpy as np
-import lab1.src.generator.quadratic_form_generator as g
+import src.generator.quadratic_form_generator as g
 
 
 class GradientDescent:
@@ -24,7 +24,7 @@ class GradientDescent:
             self.dlr = self.const_step
         else:
             self.learning_rate_iter = 0
-            self.dlr = None
+            self.dlr = self.dich
 
     def change_max_iter(self, max_iter):
         self.max_iter = max_iter
@@ -54,15 +54,15 @@ class GradientDescent:
             c1 = self.x - lr1 * np.array(self.grad_fun(self.x))
             c2 = self.x - lr2 * np.array(self.grad_fun(self.x))
 
-            f_c1 = self.fun(c1[0], c1[1])
-            f_c2 = self.fun(c2[0], c2[1])
+            f_c1 = self.fun(c1)
+            f_c2 = self.fun(c2)
 
             if f_c1 <= f_c2:
                 right = lr2
             else:
                 left = lr1
 
-        return left
+        self.learning_rate = left
 
     def gradient(self):
         points = [np.array(self.x)]
@@ -78,7 +78,7 @@ class GradientDescent:
 
 if __name__ == '__main__':
     f, gr = g.generate_quadratic(3, 1)
-    a = GradientDescent('constant',
+    a = GradientDescent('dichotomy',
                         'max_iter',
                         f,
                         gr,
