@@ -1,6 +1,6 @@
 import numpy as np
-import src.dichotomy as dic
-import src.generator.quadratic_form_generator as g
+import lab1.src.generator.quadratic_form_generator as g
+
 
 class GradientDescent:
     def __init__(self, learning_rate='constant',
@@ -42,12 +42,31 @@ class GradientDescent:
         self.learning_rate = self.learning_rate / 2
 
     def dich(self):
-        return None
+
+        approximation_resolution = 5e-2
+        left = 1e-10  # min learning rate
+        right = 2  # max learning rate
+
+        while right - left > approximation_resolution:
+            lr1 = (left + right) / 2 - self.eps
+            lr2 = (left + right) / 2 + self.eps
+
+            c1 = self.x - lr1 * np.array(self.grad_fun(self.x))
+            c2 = self.x - lr2 * np.array(self.grad_fun(self.x))
+
+            f_c1 = self.fun(c1[0], c1[1])
+            f_c2 = self.fun(c2[0], c2[1])
+
+            if f_c1 <= f_c2:
+                right = lr2
+            else:
+                left = lr1
+
+        return left
 
     def gradient(self):
         points = [np.array(self.x)]
         while self.stop():
-
             self.x -= self.learning_rate * np.array(self.grad_fun(self.x))
             points.append(np.array(self.x))
 
@@ -60,12 +79,11 @@ class GradientDescent:
 if __name__ == '__main__':
     f, gr = g.generate_quadratic(3, 1)
     a = GradientDescent('constant',
-                 'max_iter',
-                 f,
-                 gr,
-                 1e-4,
-                 [0,0,0])
+                        'max_iter',
+                        f,
+                        gr,
+                        1e-4,
+                        [0, 0, 0])
     a.change_learning_rate(50)
     a.change_learning_rate(4)
     a.gradient()
-

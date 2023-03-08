@@ -1,28 +1,26 @@
-def dichotomy_method(func, left, right, epsilon):
+def dichotomy_method(func, epsilon):
     iterations = 0
-    middle = (left + right) / 2
+    left = 0
+    right = 15
+    delta = epsilon / 1.5
 
-    while right - left > epsilon:
+    while abs(right - left) < epsilon:
 
-        x1 = (left + middle) / 2
-        x2 = (right + middle) / 2
+        x1 = (left + right) / 2 - delta
+        x2 = (left + right) / 2 + delta
 
-        if func(x1) > func(middle) > func(x2):
-            left = middle
-        elif func(x1) < func(middle) < func(x2):
-            right = middle
-        else:
+        if func(x1) >= func(x2):
             left = x1
+        else:
             right = x2
 
-        middle = (left + right) / 2
         iterations += 1
 
-    return middle, iterations
+        return (left + right) / 2, iterations
 
 
 def f(x):
     return abs(x - 10)
 
 
-print(dichotomy_method(f, 5, 12, 0.05))
+print(dichotomy_method(f, 0.05))
