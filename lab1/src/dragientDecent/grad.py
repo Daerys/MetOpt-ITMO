@@ -10,17 +10,16 @@ class GradientDescent:
         self.fun = function
         self.grad_fun = grad_function
 
-        self.eps = 1e-4
+        self.eps = 1e-7
         self.x = None
         self.learning_rate = 1
         self.grad_iter = 0
-        self.learning_rate_iter = 0
 
         if stop_criteria == 'max_iter':
             self.max_iter = 1e1
             self.stop = self.max_iter_function
         elif stop_criteria == 'gradient':
-            self.stop = self.norm
+            self.stop = self.stop_by_gradient
         else:
             raise ValueError("Invalid stop criteria algorithm")
 
@@ -28,6 +27,7 @@ class GradientDescent:
             self.dlr = self.const_step
         elif learning_rate == 'dichotomy':
             self.dlr = self.dichotomy
+            self.learning_rate_iter = 0
         else:
             raise ValueError("Invalid learning rate algorithm")
 
@@ -46,11 +46,11 @@ class GradientDescent:
     def max_iter_function(self):
         return self.grad_iter < self.max_iter
 
-    def norm(self):
-        return np.linalg.norm(self.x) < self.eps
-
     def const_step(self):
         self.learning_rate = self.learning_rate / 2
+
+    def stop_by_gradient(self):
+        return self.eps <= np.linalg.norm(self.grad_fun(self.x))
 
     def dichotomy(self):
 

@@ -6,7 +6,7 @@ if __name__ == '__main__':
     quadr = np.vectorize(lambda x: x**2)
     quadr_grad = np.vectorize(lambda x: 2 * x)
     a = g.GradientDescent('dichotomy',
-                          'max_iter',
+                          'gradient',
                           quadr,
                           quadr_grad)
     a.set_start_point(10)
