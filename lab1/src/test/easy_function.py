@@ -67,10 +67,7 @@ def draw_surface(X, Y, Z):
     plt.show()
 
 
-def draw(Z, points: np.array):
-    t = np.linspace(-20, 20, 100)
-    X, Y = np.meshgrid(t, t)
-    draw_surface(X, Y, Z)
+def draw(X, Y, Z, points: np.array):
 
     levels = []
     for i in points:
@@ -101,7 +98,11 @@ if __name__ == '__main__':
     lrs = [1, 0.5, 0.1, 0.01, 1e-3, 1e-4]
     mods = ['dichotomy', 'constant']
     criteria = ['max_iter', 'gradient']
+
+    Z = par()
+    t = np.linspace(-20, 20, 100)
+    X, Y = np.meshgrid(t, t)
+    draw_surface(X, Y, Z)
     for i in lrs[1::]:
-        Z = par()
         points = do_gradient(mods[0], criteria[1], [20, -10], i, par(), grad_par(), 30)
-        draw(Z, points)
+        draw(X, Y, Z, points)
