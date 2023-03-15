@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import lab1.src.dragientDecent.grad as g
-import lab1.src.generator.quadratic_form_generator as q
 
 
 def gip_par():
@@ -24,7 +23,7 @@ def grad_gip_par():
 
 def par():
     def f(x):
-        return x[0] ** 2 + x[1] ** 2 - 2 * x[0]
+        return 2 * (x[0] + 10) ** 2 + 0.3 * x[1] ** 2
 
     return f
 
@@ -32,16 +31,18 @@ def par():
 def grad_par():
     def f(x):
         grad = np.zeros_like(x)
-        grad[0] = 2 * x[0]
-        grad[1] = 2 * x[1] - 2
+        grad[0] = 4 * x[0] + 40
+        grad[1] = 0.6 * x[1]
         return grad
 
     return f
 
 
+C = 15
+
 def par_var2():
     def f(x):
-        return 25 * x[0] ** 2 + 3 * x[1] ** 2 - 2 * x[0]
+        return C * x[0] ** 2 + x[1] ** 2 - 2 * x[0]
 
     return f
 
@@ -49,8 +50,8 @@ def par_var2():
 def grad_par_var2():
     def f(x):
         grad = np.zeros_like(x)
-        grad[0] = 25 * 2 * x[0]
-        grad[1] = 2 * 3 * x[1] - 2
+        grad[0] = C * 2 * x[0]
+        grad[1] = 2 * x[1] - 2
         return grad
 
     return f
@@ -64,27 +65,27 @@ if __name__ == '__main__':
     #                              grad_gip_par()
     #                              )
     #
-    f = par_var2()
-    Gradient = g.GradientDescent('dichotomy',
-                                 'max_iter',
-                                 par_var2(),
-                                 grad_par_var2()
-                                 )
-    #
-    # f = par()
+    # f = par_var2()
     # Gradient = g.GradientDescent('dichotomy',
     #                              'max_iter',
-    #                              gip_par(),
-    #                              grad_gip_par()
+    #                              par_var2(),
+    #                              grad_par_var2()
     #                              )
-    Gradient.change_learning_rate(0.01)
-    Gradient.set_start_point([5, 10])
-    Gradient.change_max_iter(10)
-    points = Gradient.gradient()
 
+    f = par()
+    Gradient = g.GradientDescent('dichotomy',
+                                 'max_iter',
+                                 gip_par(),
+                                 grad_gip_par()
+                                 )
+    Gradient.change_learning_rate(0.5)
+    Gradient.set_start_point([-20, -10])
+    Gradient.change_max_iter(20)
+    points = Gradient.gradient()
+    print(points)
     t = np.linspace(-10, 10, 100)
     X, Y = np.meshgrid(t, t)
-    Z = par_var2()
+    Z = par()
     my_col = cm.jet(Z([X,Y]) / np.amax(Z([X,Y])))
     # ax = plt.subplot(111, projection='3d')
     # ax.plot_surface(X, Y, f(np.stack((X, Y))), facecolors = my_col)
