@@ -80,7 +80,7 @@ class GradientDescent:
         points = []
         while not self.stop():
             points.append(np.array(self.x))
-            self.x -= self.learning_rate * np.array(self.grad_fun(self.x)).astype(np.float64)
+            self.x -= self.learning_rate * np.array(self.grad_fun(self.x))
 
             self.dlr()
             self.grad_iter = self.grad_iter + 1
