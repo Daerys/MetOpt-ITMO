@@ -31,10 +31,6 @@ def generate_quadratic(n: int, k: int):
     T = generate_random_orthogonal_matrix(n)
     A = np.matmul(np.matmul(T, D), np.transpose(T))
 
-    x0 = np.random.uniform(-5, 5)
+    x0 = np.array(np.random.uniform(-5, 5))
     return quadratic_function(A, x0), gradient(A, x0)
 
-
-if __name__ == '__main__':
-    f, f_grad = generate_quadratic(3, 1)
-    print(f([0, 0, 0]))
