@@ -20,6 +20,9 @@ class GradientDescent:
             self.stop = self.max_iter_function
         elif stop_criteria == 'gradient':
             self.stop = self.stop_by_gradient
+        elif stop_criteria == 'quadratic':
+            self.max_iter = 1e1
+            self.stop = self.stop_quadratic
         else:
             raise ValueError("Invalid stop criteria algorithm")
 
@@ -49,6 +52,9 @@ class GradientDescent:
     def const_step(self):
         # self.learning_rate = self.learning_rate / 2
         return
+
+    def stop_quadratic(self):
+        return self.max_iter_function() or self.stop_by_gradient()
 
     def stop_by_gradient(self):
         return np.linalg.norm(self.grad_fun(self.x)) < self.eps

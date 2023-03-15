@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import lab1.src.dragientDecent.grad as g
+import lab1.src.dragientDecent.grad as grad
+import lab1.src.generator.quadratic_form_generator as gen
+import pandas as pd
 
 
 def gip_par():
@@ -88,7 +90,7 @@ def do_gradient(optimization_mod,
                 fun,
                 grad_fun,
                 max_iter: int):
-    gradient = g.GradientDescent(optimization_mod, stop_criteria, fun, grad_fun)
+    gradient = grad.GradientDescent(optimization_mod, stop_criteria, fun, grad_fun)
     gradient.set_start_point(start_point)
     gradient.change_learning_rate(lr)
     gradient.change_max_iter(max_iter)
@@ -97,14 +99,13 @@ def do_gradient(optimization_mod,
 
 if __name__ == '__main__':
     lrs = [1, 0.5, 0.1, 0.01, 1e-3, 1e-4]
+    sp = [[-1, 1], [25, 25], [-200, 200], [100.9, 1e5]]
     mods = ['dichotomy', 'constant']
     criteria = ['max_iter', 'gradient']
 
-    Z = par()
-    nabla_Z = grad_par()
+    Z = par_var2()
+    nabla_Z = grad_par_var2()
     t = np.linspace(-20, 20, 1000)
     X, Y = np.meshgrid(t, t)
-    # draw_surface(X, Y, Z)
-    #for i in lrs[1::]:
-    points = do_gradient(mods[1], criteria[0], [-20, -10], lrs[3], Z, nabla_Z, 200)
+    points = do_gradient(mods[1], criteria[1], [-20, -10], lrs[3], Z, nabla_Z, 200)
     draw(X, Y, Z, points)
