@@ -75,6 +75,7 @@ def draw(X, Y, Z, points: np.array):
     levels = np.sort(levels)
 
     cp = plt.contour(X, Y, Z([X, Y]), levels, linewidths=1)
+    plt.title("%s итераций" % len(points))
     plt.plot(points[:, 0], points[:, 1], '-*', linewidth=1, color='r')
     plt.clabel(cp, inline=1, fontsize=10)
     plt.show()
@@ -101,9 +102,9 @@ if __name__ == '__main__':
 
     Z = par()
     nabla_Z = grad_par()
-    t = np.linspace(-20, 20, 100)
+    t = np.linspace(-20, 20, 1000)
     X, Y = np.meshgrid(t, t)
-    draw_surface(X, Y, Z)
-    for i in lrs[1::]:
-        points = do_gradient(mods[0], criteria[1], [20, -10], i, Z, nabla_Z, 30)
-        draw(X, Y, Z, points)
+    # draw_surface(X, Y, Z)
+    #for i in lrs[1::]:
+    points = do_gradient(mods[1], criteria[0], [-20, -10], lrs[3], Z, nabla_Z, 200)
+    draw(X, Y, Z, points)
