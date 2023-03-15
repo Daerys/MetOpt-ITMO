@@ -23,7 +23,7 @@ def grad_gip_par():
 
 def par():
     def f(x):
-        return 2 * (x[0] + 10) ** 2 + 0.3 * x[1] ** 2
+        return x[0] ** 2 + x[1] ** 2
 
     return f
 
@@ -31,14 +31,15 @@ def par():
 def grad_par():
     def f(x):
         grad = np.zeros_like(x)
-        grad[0] = 4 * x[0] + 40
-        grad[1] = 0.6 * x[1]
+        grad[0] = 2 * x[0]
+        grad[1] = 2 * x[1]
         return grad
 
     return f
 
 
 C = 15
+
 
 def par_var2():
     def f(x):
@@ -57,6 +58,16 @@ def grad_par_var2():
     return f
 
 
+def grad_descent(learning_rate, iterations, initial_point, grad):
+    points = np.zeros((iterations, 2))
+    points[0] = initial_point
+
+    for i in range(1, iterations):
+        prev_point = points[i - 1]
+        points[i] = prev_point - learning_rate * np.array(grad(*prev_point))
+    return points
+
+
 if __name__ == '__main__':
     # f = gip_par()
     # Gradient = g.GradientDescent('dichotomy',
@@ -73,20 +84,21 @@ if __name__ == '__main__':
     #                              )
 
     f = par()
-    Gradient = g.GradientDescent('dichotomy',
+    Gradient = g.GradientDescent('constant',
                                  'max_iter',
-                                 gip_par(),
-                                 grad_gip_par()
+                                 par(),
+                                 grad_par()
                                  )
-    Gradient.change_learning_rate(0.5)
+    Gradient.change_learning_rate(0.1)
     Gradient.set_start_point([-20, -10])
-    Gradient.change_max_iter(20)
+    Gradient.change_max_iter(30)
     points = Gradient.gradient()
+    # points = grad_descent(0.5, 20, [20,20], grad_par())
     print(points)
-    t = np.linspace(-10, 10, 100)
+    t = np.linspace(-20, 20, 100)
     X, Y = np.meshgrid(t, t)
     Z = par()
-    my_col = cm.jet(Z([X,Y]) / np.amax(Z([X,Y])))
+    # my_col = cm.jet(Z([X, Y]) / np.amax(Z([X, Y])))
     # ax = plt.subplot(111, projection='3d')
     # ax.plot_surface(X, Y, f(np.stack((X, Y))), facecolors = my_col)
     # plt.show()

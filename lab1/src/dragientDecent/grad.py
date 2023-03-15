@@ -47,6 +47,7 @@ class GradientDescent:
         return self.max_iter <= self.grad_iter
 
     def const_step(self):
+        # self.learning_rate = self.learning_rate / 2
         return
 
     def stop_by_gradient(self):
