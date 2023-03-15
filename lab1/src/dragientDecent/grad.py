@@ -32,7 +32,7 @@ class GradientDescent:
             raise ValueError("Invalid learning rate algorithm")
 
     def set_start_point(self, start_point: np.array):
-        self.x = start_point
+        self.x = np.array(start_point, dtype=np.float64)
 
     def set_epsilon(self, epsilon: float):
         self.eps = epsilon
@@ -80,7 +80,7 @@ class GradientDescent:
         points = []
         while not self.stop():
             points.append(np.array(self.x))
-            self.x -= self.learning_rate * np.array(self.grad_fun(self.x)).astype(np.float64)
+            self.x -= self.learning_rate * np.array(self.grad_fun(self.x), dtype=np.float64)
 
             self.dlr()
             self.grad_iter = self.grad_iter + 1
