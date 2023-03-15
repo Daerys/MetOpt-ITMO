@@ -100,9 +100,10 @@ if __name__ == '__main__':
     criteria = ['max_iter', 'gradient']
 
     Z = par()
+    nabla_Z = grad_par()
     t = np.linspace(-20, 20, 100)
     X, Y = np.meshgrid(t, t)
     draw_surface(X, Y, Z)
     for i in lrs[1::]:
-        points = do_gradient(mods[0], criteria[1], [20, -10], i, par(), grad_par(), 30)
+        points = do_gradient(mods[0], criteria[1], [20, -10], i, Z, nabla_Z, 30)
         draw(X, Y, Z, points)
