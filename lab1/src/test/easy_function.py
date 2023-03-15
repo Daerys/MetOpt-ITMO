@@ -58,16 +58,25 @@ def grad_par_var2():
     return f
 
 
+def draw_surface(X, Y, Z):
+    ax = plt.subplot(111, projection='3d')
+    ax.plot_surface(X, Y, Z(np.stack((X, Y))), cmap='twilight')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    plt.show()
+
+
 def draw(Z, points: np.array):
     t = np.linspace(-20, 20, 100)
     X, Y = np.meshgrid(t, t)
-    ax = plt.subplot(111, projection='3d')
-    ax.plot_surface(X, Y, Z(np.stack((X, Y))), cmap='twilight')
-    plt.show()
+    draw_surface(X, Y, Z)
+
     levels = []
     for i in points:
         levels.append(Z(i))
     levels = np.sort(levels)
+
     cp = plt.contour(X, Y, Z([X, Y]), levels, linewidths=1)
     plt.plot(points[:, 0], points[:, 1], '-*', linewidth=1, color='r')
     plt.clabel(cp, inline=1, fontsize=10)
@@ -92,7 +101,7 @@ if __name__ == '__main__':
     lrs = [1, 0.5, 0.1, 0.01, 1e-3, 1e-4]
     mods = ['dichotomy', 'constant']
     criteria = ['max_iter', 'gradient']
-    for i in lrs:
+    for i in lrs[1::]:
         Z = par()
-        # points = do_gradient()
-        # draw(Z, points)
+        points = do_gradient(mods[0], criteria[1], [20, -10], i, par(), grad_par(), 30)
+        draw(Z, points)
