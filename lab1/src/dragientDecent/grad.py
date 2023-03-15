@@ -44,13 +44,13 @@ class GradientDescent:
         self.learning_rate = learning_rate
 
     def max_iter_function(self):
-        return self.grad_iter < self.max_iter
+        return self.max_iter <= self.grad_iter
 
     def const_step(self):
-        self.learning_rate = self.learning_rate / 2
+        return
 
     def stop_by_gradient(self):
-        return self.eps <= np.linalg.norm(self.grad_fun(self.x))
+        return np.linalg.norm(self.grad_fun(self.x)) < self.eps
 
     def dichotomy(self):
 
@@ -76,12 +76,12 @@ class GradientDescent:
         self.learning_rate = left
 
     def gradient(self):
-        points = [np.array(self.x)]
-        while self.stop():
-            self.x -= self.learning_rate * np.array(self.grad_fun(self.x))
+        points = []
+        while not self.stop():
             points.append(np.array(self.x))
+            self.x -= self.learning_rate * np.array(self.grad_fun(self.x)).astype(np.float64)
 
             self.dlr()
             self.grad_iter = self.grad_iter + 1
         points = np.array(points)
-        print(points)
+        return points
