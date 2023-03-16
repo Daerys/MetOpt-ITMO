@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import lab1.src.dragientDecent.grad as grad
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def draw_surface(X, Y, Z):
@@ -9,6 +10,7 @@ def draw_surface(X, Y, Z):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
+    ax.view_init(elev=20, azim=10)
     plt.show()
 
 
@@ -22,6 +24,14 @@ def draw(X, Y, Z, points: np.array):
     plt.title("%s итераций" % len(points))
     plt.plot(points[:, 0], points[:, 1], '-*', linewidth=1, color='r')
     plt.clabel(cp, inline=1, fontsize=10)
+    plt.show()
+
+
+def draw_function(F, points):
+    X = np.linspace(-1, 1, 1000)
+    plt.title("%s итераций" % len(points))
+    plt.plot(X, F([X]))
+    plt.plot(points, F([points]), '-o', linewidth=0.5, color='r')
     plt.show()
 
 
@@ -51,11 +61,14 @@ if __name__ == '__main__':
     functions = {
         'hyperboloid': (lambda x: x[0] ** 2 - x[1] ** 2, lambda x: np.array([2 * x[0], - 2 * x[1]])),
         'paraboloid': (lambda x: x[0] ** 2 + x[1] ** 2, lambda x: np.array([2 * x[0], 2 * x[1]])),
-        'extended_paraboloid': (lambda x: C1 * x[0] ** 2 + C2 * x[1] ** 2, lambda x: np.array([2 * C1 * x[0], 2 * C2 * x[1]])),
+        'extended_paraboloid': (
+            lambda x: C1 * x[0] ** 2 + C2 * x[1] ** 2, lambda x: np.array([2 * C1 * x[0], 2 * C2 * x[1]])),
+        'abs': (lambda x: abs(x[0]), lambda x: np.array([np.sign(x[0])]))
     }
-
-    Z, nabla_Z = functions['extended_paraboloid']
-    t = np.linspace(-20, 20, 1000)
-    X, Y = np.meshgrid(t, t)
-    points = do_gradient(mods[2], criteria[2], [-20, -10], lrs[3], Z, nabla_Z, 200)
-    draw(X, Y, Z, points)
+    Z, nabla_Z = functions['abs']
+    # t = np.linspace(-1, 1, 1000)
+    # X, Y = np.meshgrid(t, t)
+    points = do_gradient(mods[0], criteria[2], [-0.5], lrs[2], Z, nabla_Z, 300)
+    draw_function(Z, points)
+    # draw(X, Y, Z, points)
+    # draw_surface(X, Y, Z)
