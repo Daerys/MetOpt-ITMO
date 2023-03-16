@@ -1,5 +1,5 @@
 import numpy as np
-import lab1.src.test.easy_function as ef
+import lab1.src.test.different_method_tester as ef
 import lab1.src.generator.quadratic_form_generator as gen
 import pandas as pd
 
