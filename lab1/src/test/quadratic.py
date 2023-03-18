@@ -19,7 +19,7 @@ def test_quadratic():
 if __name__ == '__main__':
     lrs = [1, 0.5, 0.1, 0.01, 1e-3, 1e-4]
     mods = ['dichotomy', 'constant']
-    criteria = ['max_iter', 'gradient', 'quadratic']
+    criteria = ['max_iter', 'gradient', 'mixed']
 
     results = []
 

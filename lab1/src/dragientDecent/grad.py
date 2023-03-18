@@ -20,17 +20,20 @@ class GradientDescent:
             self.stop = self.max_iter_function
         elif stop_criteria == 'gradient':
             self.stop = self.stop_by_gradient
-        elif stop_criteria == 'quadratic':
+        elif stop_criteria == 'mixed':
             self.max_iter = 1e1
-            self.stop = self.stop_quadratic
+            self.stop = self.stop_mixed
         else:
             raise ValueError("Invalid stop criteria algorithm")
 
         if learning_rate == 'constant':
             self.dlr = self.const_step
         elif learning_rate == 'dichotomy':
-            self.dlr = self.dichotomy
-            self.learning_rate_iter = 0
+            self.search = self.dichotomy_search
+            self.dlr = self.one_dim
+        elif learning_rate == 'wolfe':
+            self.search = self.wolfe_search
+            self.dlr = self.one_dim
         else:
             raise ValueError("Invalid learning rate algorithm")
 
@@ -50,37 +53,62 @@ class GradientDescent:
         return self.max_iter <= self.grad_iter
 
     def const_step(self):
-        # self.learning_rate = self.learning_rate / 2
         return
 
-    def stop_quadratic(self):
+    def stop_mixed(self):
         return self.max_iter_function() or self.stop_by_gradient()
 
     def stop_by_gradient(self):
         return np.linalg.norm(self.grad_fun(self.x)) < self.eps
 
-    def dichotomy(self):
+    def first_condition(self, lr, c1=1e-4):
+        return self.fun(self.x - lr * self.grad_fun(self.x)) <= self.fun(self.x) - c1 * lr * np.linalg.norm(
+            self.grad_fun(self.x)) ** 2
+
+    def second_condition(self, lr, c2=0.9):
+        return np.dot(np.array(self.grad_fun(self.x - lr * self.grad_fun(self.x))).flatten(),
+                      np.array(self.grad_fun(self.x)).flatten()) >= c2 * \
+            np.linalg.norm(np.array(self.grad_fun(self.x)).flatten()) ** 2
+
+    def wolfe_search(self, left, right):
+        lr = (left + right) / 2
+
+        if not self.first_condition(lr):
+            return left, lr, False, True
+        elif not self.second_condition(lr):
+            return lr, right, False, True
+        else:
+            return lr, right, True, False
+
+    def dichotomy_search(self, left, right):
+        lr1 = (left + right) / 2 - self.eps
+        lr2 = (left + right) / 2 + self.eps
+
+        c1 = self.x - lr1 * np.array(self.grad_fun(self.x))
+        c2 = self.x - lr2 * np.array(self.grad_fun(self.x))
+
+        f_c1 = self.fun(c1)
+        f_c2 = self.fun(c2)
+
+        if f_c1 <= f_c2:
+            return left, lr2, False, True
+        return lr1, right, False, True
+
+    def one_dim(self):
 
         approximation_resolution = 5e-2
         left = 1e-10  # min learning rate
         right = 2  # max learning rate
+        stop = False
+        can_make_a_step = False
 
-        while right - left > approximation_resolution:
-            lr1 = (left + right) / 2 - self.eps
-            lr2 = (left + right) / 2 + self.eps
+        while right - left > approximation_resolution and not stop:
+            left, right, stop, can_make_a_step = self.search(left, right)
 
-            c1 = self.x - lr1 * np.array(self.grad_fun(self.x))
-            c2 = self.x - lr2 * np.array(self.grad_fun(self.x))
-
-            f_c1 = self.fun(c1)
-            f_c2 = self.fun(c2)
-
-            if f_c1 <= f_c2:
-                right = lr2
-            else:
-                left = lr1
-
+        if not can_make_a_step:
+            return True
         self.learning_rate = left
+        return False
 
     def gradient(self):
         points = []
@@ -88,7 +116,8 @@ class GradientDescent:
             points.append(np.array(self.x))
             self.x -= self.learning_rate * np.array(self.grad_fun(self.x), dtype=np.float64)
 
-            self.dlr()
+            if self.dlr():
+                break
             self.grad_iter = self.grad_iter + 1
         points = np.array(points)
         return points

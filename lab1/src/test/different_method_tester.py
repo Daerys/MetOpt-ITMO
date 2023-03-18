@@ -14,21 +14,21 @@ def draw_surface(X, Y, Z):
     plt.show()
 
 
-def draw(X, Y, Z, points: np.array):
+def draw_gradient_layout(X, Y, Z, points: np.array, lr):
+
     levels = []
     for i in points:
         levels.append(Z(i))
     levels = np.sort(levels)
 
     cp = plt.contour(X, Y, Z([X, Y]), levels, linewidths=1)
-    plt.title("%s итераций" % len(points))
+    plt.title("%d итераций. lr = %s" % (len(points), lr))
     plt.plot(points[:, 0], points[:, 1], '-*', linewidth=1, color='r')
     plt.clabel(cp, inline=1, fontsize=10)
     plt.show()
 
 
-def draw_function(F, points):
-    X = np.linspace(-1, 1, 1000)
+def draw_function(X, F, points):
     plt.title("%s итераций" % len(points))
     plt.plot(X, F([X]))
     plt.plot(points, F([points]), '-o', linewidth=0.5, color='r')
@@ -50,10 +50,10 @@ def do_gradient(optimization_mod,
 
 
 if __name__ == '__main__':
-    lrs = [1, 0.5, 0.1, 0.01, 1e-3, 1e-4]
+    lrs = [0.1, 0.01, 1e-3, 1e-4]
     sp = [[-1, 1], [25, 25], [-200, 200], [100.9, 1e5]]
     mods = ['dichotomy', 'constant', 'wolfe']
-    criteria = ['max_iter', 'gradient', 'quadratic']
+    criteria = ['max_iter', 'gradient', 'mixed']
 
     C1 = 15
     C2 = 0.3
@@ -63,12 +63,17 @@ if __name__ == '__main__':
         'paraboloid': (lambda x: x[0] ** 2 + x[1] ** 2, lambda x: np.array([2 * x[0], 2 * x[1]])),
         'extended_paraboloid': (
             lambda x: C1 * x[0] ** 2 + C2 * x[1] ** 2, lambda x: np.array([2 * C1 * x[0], 2 * C2 * x[1]])),
+        'booth': (lambda x:  (x[0]+2 * x[1] -7)**2 + (2 * x[0] + x[1] - 5) ** 2,
+                  lambda x : np.array([2 * (x[0] + 2 * x[1] - 7) + 4 * (2*x[0] + x[1] - 5), 4*(x[0] + 2*x[1] - 7) + 2* (2*x[0] + x[1] - 5)])),
         'abs': (lambda x: abs(x[0]), lambda x: np.array([np.sign(x[0])]))
     }
-    Z, nabla_Z = functions['abs']
-    # t = np.linspace(-1, 1, 1000)
-    # X, Y = np.meshgrid(t, t)
-    points = do_gradient(mods[0], criteria[2], [-0.5], lrs[2], Z, nabla_Z, 300)
-    draw_function(Z, points)
-    # draw(X, Y, Z, points)
+    Z, nabla_Z = functions['extended_paraboloid']
+    t = np.linspace(-20, 20, 100)
+    X, Y = np.meshgrid(t, t)
+    for lr in lrs[0:4]:
+        points = do_gradient(mods[2], criteria[2], [-20, -10], lr, Z, nabla_Z, 100000)
+        print(points)
+        print(len(points))
+        draw_gradient_layout(X, Y, Z, points, lr)
+    # draw_function(np.linspace(-1, 1, 1000), Z, points)
     # draw_surface(X, Y, Z)
