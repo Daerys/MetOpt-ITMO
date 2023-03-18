@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import lab1.src.dragientDecent.grad as grad
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def draw_surface(X, Y, Z):
@@ -15,7 +14,6 @@ def draw_surface(X, Y, Z):
 
 
 def draw_gradient_layout(X, Y, Z, points: np.array, lr):
-
     levels = []
     for i in points:
         levels.append(Z(i))
@@ -63,8 +61,9 @@ if __name__ == '__main__':
         'paraboloid': (lambda x: x[0] ** 2 + x[1] ** 2, lambda x: np.array([2 * x[0], 2 * x[1]])),
         'extended_paraboloid': (
             lambda x: C1 * x[0] ** 2 + C2 * x[1] ** 2, lambda x: np.array([2 * C1 * x[0], 2 * C2 * x[1]])),
-        'booth': (lambda x:  (x[0]+2 * x[1] -7)**2 + (2 * x[0] + x[1] - 5) ** 2,
-                  lambda x : np.array([2 * (x[0] + 2 * x[1] - 7) + 4 * (2*x[0] + x[1] - 5), 4*(x[0] + 2*x[1] - 7) + 2* (2*x[0] + x[1] - 5)])),
+        'booth': (lambda x: (x[0] + 2 * x[1] - 7) ** 2 + (2 * x[0] + x[1] - 5) ** 2,
+                  lambda x: np.array([2 * (x[0] + 2 * x[1] - 7) + 4 * (2 * x[0] + x[1] - 5),
+                                      4 * (x[0] + 2 * x[1] - 7) + 2 * (2 * x[0] + x[1] - 5)])),
         'abs': (lambda x: abs(x[0]), lambda x: np.array([np.sign(x[0])]))
     }
     Z, nabla_Z = functions['extended_paraboloid']

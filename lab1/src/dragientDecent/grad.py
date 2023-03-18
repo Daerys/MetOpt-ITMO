@@ -61,11 +61,11 @@ class GradientDescent:
     def stop_by_gradient(self):
         return np.linalg.norm(self.grad_fun(self.x)) < self.eps
 
-    def first_condition(self, lr, c1=1e-4):
+    def armijo_condition(self, lr, c1=1e-4):
         return self.fun(self.x - lr * self.grad_fun(self.x)) <= self.fun(self.x) - c1 * lr * np.linalg.norm(
             self.grad_fun(self.x)) ** 2
 
-    def second_condition(self, lr, c2=0.9):
+    def curvature_condition(self, lr, c2=0.9):
         return np.dot(np.array(self.grad_fun(self.x - lr * self.grad_fun(self.x))).flatten(),
                       np.array(self.grad_fun(self.x)).flatten()) >= c2 * \
             np.linalg.norm(np.array(self.grad_fun(self.x)).flatten()) ** 2
@@ -73,9 +73,9 @@ class GradientDescent:
     def wolfe_search(self, left, right):
         lr = (left + right) / 2
 
-        if not self.first_condition(lr):
+        if not self.armijo_condition(lr):
             return left, lr, False, True
-        elif not self.second_condition(lr):
+        elif not self.curvature_condition(lr):
             return lr, right, False, True
         else:
             return lr, right, True, False

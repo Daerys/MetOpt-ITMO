@@ -32,4 +32,3 @@ def generate_quadratic(n: int, k: float):
     # x0 = np.array(np.random.uniform(-5, 5, n))
     x0 = np.zeros(n)
     return quadratic_function(A, x0), gradient(A, x0)
-
