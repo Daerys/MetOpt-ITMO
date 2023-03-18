@@ -8,7 +8,7 @@ def generate_random_orthogonal_matrix(n: int):
 
 
 def generate_diagonal_matrix(k_min: float, k_max: float, n: int):
-    eigenvalues = [k_min] + [np.random.uniform(k_min, k_max)] * (n - 2) + [k_max]
+    eigenvalues = [k_min] + sorted([np.random.uniform(k_min, k_max)]) * (n - 2) + [k_max]
     return np.diag(eigenvalues)
 
 
@@ -24,13 +24,11 @@ def gradient(A, x0):
     return grad
 
 
-def generate_quadratic(n: int, k: int):
-    k_min = np.random.uniform(1, np.sqrt(k))
-    k_max = k * k_min
-    D = generate_diagonal_matrix(k_min, k_max, n)
+def generate_quadratic(n: int, k: float):
+    D = generate_diagonal_matrix(1, k, n)
     T = generate_random_orthogonal_matrix(n)
     A = np.matmul(np.matmul(T, D), np.transpose(T))
 
-    x0 = np.array(np.random.uniform(-5, 5))
+    # x0 = np.array(np.random.uniform(-5, 5, n))
+    x0 = np.zeros(n)
     return quadratic_function(A, x0), gradient(A, x0)
-
