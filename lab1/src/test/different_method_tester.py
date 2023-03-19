@@ -66,13 +66,13 @@ if __name__ == '__main__':
                                       4 * (x[0] + 2 * x[1] - 7) + 2 * (2 * x[0] + x[1] - 5)])),
         'abs': (lambda x: abs(x[0]), lambda x: np.array([np.sign(x[0])]))
     }
-    Z, nabla_Z = functions['extended_paraboloid']
+    Z, nabla_Z = functions['paraboloid']
     t = np.linspace(-20, 20, 100)
     X, Y = np.meshgrid(t, t)
-    for lr in lrs[0:4]:
-        points = do_gradient(mods[2], criteria[2], [-20, -10], lr, Z, nabla_Z, 100000)
-        print(points)
+    for i in sp[0:4]:
+        points = do_gradient(mods[0], criteria[2], i, lrs[1], Z, nabla_Z, 100000)
+        print(points[-1])
         print(len(points))
-        draw_gradient_layout(X, Y, Z, points, lr)
+        draw_gradient_layout(X, Y, Z, points, i)
     # draw_function(np.linspace(-1, 1, 1000), Z, points)
     # draw_surface(X, Y, Z)
