@@ -1,49 +1,74 @@
 from random import sample
+import numpy as np
 
 
-def grad_mse(weights, subset):
-    grad = [0 for _ in range(len(subset))]
-
-    for items in subset:
-        prediction = 0
-        for i in range(len(items) - 1):
-            prediction += items[i] * weights[i]
-        for i in items:
-            grad[i] = 2 * (items[-1] - prediction) * items[i]
-    return grad
+def me(data, y, w):
+    ans = 0
+    for i in range(len(data)):
+        ans += w[i] * data[i]
+    ans -= y
+    return ans
 
 
 # class field
 class GradientDescent:
-    def __int__(self, max_iter=100, batch_size=None, start_point=None, learning_rate=1, learning_rate_scheduling=None,
-                make_step=None):
-        self.max_iter = max_iter
+    def __int__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None):
+        """
+        :NOTE: We'll make a child classes which will
+        override gradient function and learning_rate_scheduling will bw passed to init
+        """
         self.batch_size = batch_size
-        self.start_point = start_point
-        self.learning_rate = learning_rate
+        self.lr = learning_rate if learning_rate else 1.0
+        self.max_epoch = max_epoch
         self.learning_rate_scheduling = learning_rate_scheduling if learning_rate_scheduling else self.constant
-        self.make_step = make_step if make_step else self.grad
 
-    def run(self, data):
-        w = [self.start_point if self.start_point else 0.0 for _ in range(len(data))]
-        history = [w]
-        for epoch in range(self.max_iter):
-            subset = sample(data, self.batch_size if self.batch_size else len(data))
-            self.learning_rate = self.learning_rate_scheduling(self.learning_rate)
-            w = self.make_step(self.learning_rate, w, subset)
+    def gradient(self, X, w):
+        """
+        :NOTE: w(weights) = len(X[0]). We'll count X[i][-1] = 1 and "expected value" is X[i][-1]
+        That's how w[-1] is variable without x_i
+        """
+        # mse = mse_calc()
+        data = [x[:-1] + [1] for x in X]
+        y = [y[-1] for y in X]
+        result = np.zeros(len(w))
 
-            history.append(w)
-        return w, history
+        for i in range(len(w)):
+            for j in range(len(data)):
+                result[i] += data[j][i] * me(data[j], y[j], w)
+            result[i] *= 2
+
+        return np.array(result)
 
     @staticmethod
-    def constant(learning_rate):
-        return learning_rate
+    def constant(lr):
+        return lr
 
-    @staticmethod
-    def grad(learning_rate, weights, subset):
-        grad = grad_mse(weights, subset)
-        for i in range(len(weights)):
-            weights[i] -= learning_rate * grad[i]
-        return weights
+    def run(self, data, start_weights):
+        if len(data) < 1 or len(data[0]) < 2:
+            raise ValueError("data has to represent at least 2d space")
+        w = start_weights
+        log = [start_weights]
+        for _ in range(self.max_epoch):
+            X = sample(data, self.batch_size if self.batch_size else len(data))
+            w -= self.learning_rate_scheduling(self.lr) * self.gradient(X, w)
+            log.append(w)
+        return log, w
+
 
 # class field end
+
+"""
+Example of tasks 2-3:
+task2:
+def exp():
+    def foo(old_lr)
+        IMPLEMENTATION
+        return new_lr
+    return foo
+
+task3:
+class BruhGradient(GradientDescent):
+    def __init__(...) <- if needed
+    
+    def gradient(...) <- overriding old gradient
+"""
