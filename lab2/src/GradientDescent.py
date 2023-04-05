@@ -1,18 +1,11 @@
 from random import sample
 import numpy as np
-
-
-def me(data, y, w):
-    ans = 0
-    for i in range(len(data)):
-        ans += w[i] * data[i]
-    ans -= y
-    return ans
+import lab2.src.lab_2_utils as utils
 
 
 # class field
 class GradientDescent:
-    def __int__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None):
+    def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None):
         """
         :NOTE: We'll make a child classes which will
         override gradient function and learning_rate_scheduling will bw passed to init
@@ -27,31 +20,24 @@ class GradientDescent:
         :NOTE: w(weights) = len(X[0]). We'll count X[i][-1] = 1 and "expected value" is X[i][-1]
         That's how w[-1] is variable without x_i
         """
-        # mse = mse_calc()
-        data = [x[:-1] + [1] for x in X]
-        y = [y[-1] for y in X]
-        result = np.zeros(len(w))
-
-        for i in range(len(w)):
-            for j in range(len(data)):
-                result[i] += data[j][i] * me(data[j], y[j], w)
-            result[i] *= 2
-
-        return np.array(result)
+        x, y = utils.split(X)
+        gradient = utils.MSE_gradient(x, y)
+        return gradient(w)
 
     @staticmethod
     def constant(lr):
         return lr
 
     def run(self, data, start_weights):
-        if len(data) < 1 or len(data[0]) < 2:
-            raise ValueError("data has to represent at least 2d space")
-        w = start_weights
+        data = np.asarray(data)
+        start_weights = np.asarray(start_weights)
+        w = start_weights.astype(np.float64).reshape(-1, 1)
         log = [start_weights]
         for _ in range(self.max_epoch):
-            X = sample(data, self.batch_size if self.batch_size else len(data))
+            indices = sample(range(len(data)), self.batch_size if self.batch_size else len(data))
+            X = data[indices]
             w -= self.learning_rate_scheduling(self.lr) * self.gradient(X, w)
-            log.append(w)
+            log.append(w.copy().ravel())
         return log, w
 
 
@@ -69,6 +55,6 @@ def exp():
 task3:
 class BruhGradient(GradientDescent):
     def __init__(...) <- if needed
-    
+
     def gradient(...) <- overriding old gradient
 """
