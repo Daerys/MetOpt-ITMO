@@ -39,14 +39,24 @@ def split(X):
     return extend(X[:, :-1]), X[:, -1:]
 
 
-# X = np.array([[1, 2], [3, 4], [5, 6]])
-# y = np.array([1, 2, 3])
-#
-# print(merge(X, y))
-#
-# weights = np.array([1, 1])
-#
-# grad_func = MSE_gradient(X, y)
-# grad = grad_func(weights)
-#
-# print(grad) # [14. 20.]
+# additional task
+def MSE_poly(X: np.array, y: np.array):
+    X = np.vander(X, len(X[0]))
+
+    def foo(weights):
+        weights = np.asarray(weights)
+        y_pred = X @ weights.reshape(-1, 1)
+        return np.sum((y_pred - y) ** 2)
+
+    return foo
+
+
+def MSE_poly_gradient(X: np.array, y: np.array):
+    X = np.vander(X, len(X[0]))
+
+    def foo(weights):
+        weights = np.asarray(weights)
+        y_pred = X @ weights.reshape(-1, 1)
+        return 2 * X.T @ (y_pred - y)
+
+    return foo
