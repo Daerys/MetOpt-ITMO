@@ -25,8 +25,8 @@ def draw(Z, pts):
 
 
 def plot(weights, set_of_points):
-    X = np.asarray(data['x'])
-    Y = np.asarray(data['y'])
+    X = np.asarray(set_of_points[:, :-1])
+    Y = np.asarray(set_of_points[:, -1:])
     plt.plot(X, Y, 'o')
     xmax = max(map(lambda o: o[0], set_of_points))
     # print(xmax)
