@@ -5,7 +5,11 @@ import lab2.src.lab_2_utils as utils
 
 # class field
 class GradientDescent:
-    def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None):
+    def __init__(self, batch_size=None,
+                 learning_rate=None,
+                 max_epoch=100,
+                 learning_rate_scheduling=None,
+                 eps=1e-4):
         """
         :NOTE: We'll make a child classes which will
         override gradient function and learning_rate_scheduling will bw passed to init
@@ -14,6 +18,7 @@ class GradientDescent:
         self.lr = learning_rate if learning_rate else 1.0
         self.max_epoch = max_epoch
         self.learning_rate_scheduling = learning_rate_scheduling if learning_rate_scheduling else self.constant
+        self.eps = eps
 
     def gradient(self, X, w):
         """
@@ -36,8 +41,13 @@ class GradientDescent:
         for _ in range(self.max_epoch):
             indices = sample(range(len(data)), self.batch_size if self.batch_size else len(data))
             X = data[indices]
-            w -= self.learning_rate_scheduling(self.lr) * self.gradient(X, w)
+
+            gr = self.gradient(X, w)
+            w -= self.learning_rate_scheduling(self.lr) * gr
+
             log.append(w.copy().ravel())
+            if np.linalg.norm(gr) < self.eps or np.linalg.norm(log[-1] - log[-2]) < self.eps:
+                break
         return log, w
 
 

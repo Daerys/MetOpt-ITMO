@@ -1,5 +1,3 @@
-from random import random
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,6 +8,7 @@ data_set = []
 
 
 def draw(Z, pts):
+    plt.title(f"{len(pts)} итераций, найденные коэффициенты {pts[-1]}")
     pts = np.asarray(pts)
     x1 = np.linspace(pts[:, 0].min(), pts[:, 0].max(), 100)
     x2 = np.linspace(pts[:, 1].min(), pts[:, 1].max(), 100)
@@ -29,12 +28,7 @@ def plot(weights, set_of_points):
     Y = np.asarray(set_of_points[:, -1:])
     plt.plot(X, Y, 'o')
     xmax = max(map(lambda o: o[0], set_of_points))
-    # print(xmax)
-    # print(weights[0])
-    # print(type(xmax))
-    # print(type(weights[0]))
-
-    plt.plot([0, xmax], [weights[1], weights[1] + xmax * weights[0]], color='orange')
+    plt.plot([0, xmax], [weights[1], weights[1] + xmax * weights[0]], color='red')
     plt.show()
 
 
