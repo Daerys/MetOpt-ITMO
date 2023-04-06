@@ -10,11 +10,13 @@ def MSE(X, y):
     return foo
 
 
-def MSE_gradient(X: np.array, y: np.array):
+def MSE_gradient(X: np.array, y: np.array, noise_level=0.1):
     def foo(weights):
         weights = np.asarray(weights)
         y_pred = X @ weights.reshape(-1, 1)
-        return 2 * X.T @ (y_pred - y)
+        a = 2 * X.T @ (y_pred - y)
+        noise = np.random.normal(scale=noise_level, size=a.shape)
+        return a + noise
 
     return foo
 
