@@ -27,7 +27,7 @@ class GradientDescent:
         That's how w[-1] is variable without x_i
         """
         x, y = utils.split(X)
-        gradient = utils.MSE_gradient(x, y) # w - self.lr * (w / self.lr - w_new /self.lr)
+        gradient = utils.MSE_gradient(x, y)  # w - self.lr * (w / self.lr - w_new /self.lr)
         return gradient(w)
 
     def constant(self, _):
@@ -43,7 +43,7 @@ class GradientDescent:
             X = data[indices]
 
             self.lr = self.learning_rate_scheduling(epoch)
-            gr = self.gradient(X, w, epoch, self.lr, log) # gr = (w / self.lr - wp * delta)
+            gr = self.gradient(X, w, epoch, self.lr, log)  # gr = (w / self.lr - wp * delta)
             w -= self.lr * gr
 
             log.append(w.copy().ravel())
@@ -67,6 +67,7 @@ class BruhGradient(GradientDescent):
     def gradient(...) <- overriding old gradient
 """
 
+
 class MomentumGradientDescent(GradientDescent):
     def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,
                  gamma=0.0001):
@@ -81,7 +82,8 @@ class MomentumGradientDescent(GradientDescent):
         for j in range(len(w)):
             previous = log[-1][j] * self.gamma
             w[j] = w[j] - (previous + self.lr * gradient[j])
-        return old_w/self.lr - w/self.lr
+        return old_w / self.lr - w / self.lr
+
 
 class NesterovGradientDescent(GradientDescent):
     def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,
@@ -101,9 +103,11 @@ class NesterovGradientDescent(GradientDescent):
             w[j] = w[j] - (previous + self.lr * new_gradient[j])
         return new_gradient
 
+
 class AdagradGradientDescent(GradientDescent):
     def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4):
         super().__init__(batch_size, learning_rate, max_epoch, learning_rate_scheduling, eps)
+        self.log = None
         self.G = None
 
     def gradient(self, X, w, epoch, lr, log):
@@ -123,6 +127,11 @@ class AdagradGradientDescent(GradientDescent):
 
         return gradient
 
+
+def exponential_moving_average(q_last, ema_coefficient, q_one):
+    return q_one * ema_coefficient + (1 - ema_coefficient) * q_last
+
+
 class RMSPropGradientDescent(GradientDescent):
     def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,
                  beta=0.1):
@@ -130,8 +139,6 @@ class RMSPropGradientDescent(GradientDescent):
         self.beta = beta
         self.ema_grad = None
 
-    def exponential_moving_average(self, q_last, ema_coefficient, q_one):
-        return q_one * ema_coefficient + (1 - ema_coefficient) * q_last
     def gradient(self, X, w, epoch, lr, log):
         x, y = utils.split(X)
         gradient = utils.MSE_gradient(x, y)
@@ -141,11 +148,12 @@ class RMSPropGradientDescent(GradientDescent):
             self.ema_grad = [0.0 for _ in range(len(w))]
 
         for j in range(len(w)):
-            self.ema_grad[j] = self.exponential_moving_average(self.ema_grad[j], self.beta, gradient[j] ** 2)
+            self.ema_grad[j] = exponential_moving_average(self.ema_grad[j], self.beta, gradient[j] ** 2)
 
         for j in range(len(w)):
             w[j] = w[j] - (lr * gradient[j] / (math.sqrt(self.ema_grad[j]) + 1e-8))
         return gradient
+
 
 class AdamGradientDescent(GradientDescent):
     def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,
@@ -156,9 +164,7 @@ class AdamGradientDescent(GradientDescent):
         self.ema_grad = None
         self.ema_grad_sqr = None
 
-    def exponential_moving_average(self, q_last, ema_coefficient, q_one):
-        return q_one * ema_coefficient + (1 - ema_coefficient) * q_last
-    def gradient(self,  X, w, epoch, lr, log):
+    def gradient(self, X, w, epoch, lr, log):
         x, y = utils.split(X)
         gradient = utils.MSE_gradient(x, y)
         gradient = gradient(w)
@@ -168,11 +174,10 @@ class AdamGradientDescent(GradientDescent):
         if self.ema_grad_sqr is None:
             self.ema_grad_sqr = [0.0 for _ in range(len(w))]
 
-
         p = len(log)
         for j in range(len(w)):
-            self.ema_grad[j] = self.exponential_moving_average(self.ema_grad[j], self.beta1, gradient[j])
-            self.ema_grad_sqr[j] = self.exponential_moving_average(self.ema_grad_sqr[j], self.beta2, gradient[j] ** 2)
+            self.ema_grad[j] = exponential_moving_average(self.ema_grad[j], self.beta1, gradient[j])
+            self.ema_grad_sqr[j] = exponential_moving_average(self.ema_grad_sqr[j], self.beta2, gradient[j] ** 2)
 
         for j in range(len(w)):
             m = self.ema_grad[j] / (1 - math.pow(self.beta1, p))
