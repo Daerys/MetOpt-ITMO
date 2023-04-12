@@ -45,7 +45,7 @@ def split(X):
 
 def exponential_decay(init_lr):
     def foo(t):
-        k = 0.03
+        k = 0.003
         new_lr = init_lr * np.exp(-k * t)
         return new_lr
 

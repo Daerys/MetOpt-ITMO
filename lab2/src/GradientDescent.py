@@ -102,7 +102,7 @@ class NesterovGradientDescent(GradientDescent):
         return new_gradient
 
 class AdagradGradientDescent(GradientDescent):
-    def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,):
+    def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4):
         super().__init__(batch_size, learning_rate, max_epoch, learning_rate_scheduling, eps)
         self.G = None
 
@@ -116,57 +116,66 @@ class AdagradGradientDescent(GradientDescent):
         result = []
         for g in self.G:
             result.append(1e-1 / math.sqrt(g + 1e-8))
-        self.lr = result
+        self.log = result
         x, y = utils.split(X)
         gradient = utils.MSE_gradient(x, y)
         gradient = gradient(w)
 
         return gradient
 
-'''
 class RMSPropGradientDescent(GradientDescent):
-    def __init__(self, batch_size, learning_rate, max_epoch, learning_rate_scheduling, eps, beta):
+    def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,
+                 beta=0.1):
         super().__init__(batch_size, learning_rate, max_epoch, learning_rate_scheduling, eps)
         self.beta = beta
         self.ema_grad = None
 
-    def make_step(self, coefficients, step, gradients, current_objects):
-        gradient = utils.MSE_gradient(coefficients, current_objects)
+    def exponential_moving_average(self, q_last, ema_coefficient, q_one):
+        return q_one * ema_coefficient + (1 - ema_coefficient) * q_last
+    def gradient(self, X, w, epoch, lr, log):
+        x, y = utils.split(X)
+        gradient = utils.MSE_gradient(x, y)
+        gradient = gradient(w)
 
         if self.ema_grad is None:
-            self.ema_grad = [0.0 for _ in range(len(coefficients))]
+            self.ema_grad = [0.0 for _ in range(len(w))]
 
-        for j in range(len(coefficients)):
-            self.ema_grad[j] = exponential_moving_average(self.ema_grad[j], self.beta, gradient[j] ** 2)
+        for j in range(len(w)):
+            self.ema_grad[j] = self.exponential_moving_average(self.ema_grad[j], self.beta, gradient[j] ** 2)
 
-        for j in range(len(coefficients)):
-            coefficients[j] = coefficients[j] - (step[j] * gradient[j] / (math.sqrt(self.ema_grad[j]) + 1e-8))
+        for j in range(len(w)):
+            w[j] = w[j] - (lr * gradient[j] / (math.sqrt(self.ema_grad[j]) + 1e-8))
         return gradient
 
-
 class AdamGradientDescent(GradientDescent):
-    def __init__(self, limit, eps, ema_coef, batch_size, beta1, beta2):
-        super().__init__(limit, eps, ema_coef, batch_size)
+    def __init__(self, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,
+                 beta1=0.1, beta2=0.1):
+        super().__init__(batch_size, learning_rate, max_epoch, learning_rate_scheduling, eps)
         self.beta1 = beta1
         self.beta2 = beta2
         self.ema_grad = None
         self.ema_grad_sqr = None
 
-    def make_step(self, coefficients, step, gradients, current_objects):
-        gradient = utils.MSE_gradient(coefficients, current_objects)
+    def exponential_moving_average(self, q_last, ema_coefficient, q_one):
+        return q_one * ema_coefficient + (1 - ema_coefficient) * q_last
+    def gradient(self,  X, w, epoch, lr, log):
+        x, y = utils.split(X)
+        gradient = utils.MSE_gradient(x, y)
+        gradient = gradient(w)
 
         if self.ema_grad is None:
-            self.ema_grad = [0.0 for _ in range(len(coefficients))]
+            self.ema_grad = [0.0 for _ in range(len(w))]
         if self.ema_grad_sqr is None:
-            self.ema_grad_sqr = [0.0 for _ in range(len(coefficients))]
+            self.ema_grad_sqr = [0.0 for _ in range(len(w))]
 
-        p = len(gradients)
-        for j in range(len(coefficients)):
-            self.ema_grad[j] = exponential_moving_average(self.ema_grad[j], self.beta1, gradient[j])
-            self.ema_grad_sqr[j] = exponential_moving_average(self.ema_grad_sqr[j], self.beta2, gradient[j] ** 2)
 
-        for j in range(len(coefficients)):
+        p = len(log)
+        for j in range(len(w)):
+            self.ema_grad[j] = self.exponential_moving_average(self.ema_grad[j], self.beta1, gradient[j])
+            self.ema_grad_sqr[j] = self.exponential_moving_average(self.ema_grad_sqr[j], self.beta2, gradient[j] ** 2)
+
+        for j in range(len(w)):
             m = self.ema_grad[j] / (1 - math.pow(self.beta1, p))
             v = self.ema_grad_sqr[j] / (1 - math.pow(self.beta2, p))
-            coefficients[j] = coefficients[j] - (step[j] * m / (math.sqrt(v) + 1e-8))
-        return gradient'''
+            w[j] = w[j] - (lr * m / (math.sqrt(v) + 1e-8))
+        return gradient
