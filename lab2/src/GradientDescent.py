@@ -20,7 +20,7 @@ class GradientDescent:
         self.learning_rate_scheduling = learning_rate_scheduling if learning_rate_scheduling else self.constant
         self.eps = eps
 
-    def gradient(self, X, w):
+    def gradient(self, X, w, _, __, ___):
         """
         :NOTE: w(weights) = len(X[0]). We'll count X[i][-1] = 1 and "expected value" is X[i][-1]
         That's how w[-1] is variable without x_i
@@ -42,8 +42,9 @@ class GradientDescent:
             indices = sample(range(len(data)), self.batch_size if self.batch_size else len(data))
             X = data[indices]
 
-            gr = self.gradient(X, w)
-            w -= self.learning_rate_scheduling(self.lr, epoch) * gr
+            self.lr = self.learning_rate_scheduling(self.lr, epoch)
+            gr = self.gradient(X, w, epoch, self.lr, log)
+            w -= self.lr * gr
 
             log.append(w.copy().ravel())
             if np.linalg.norm(gr) < self.eps or np.linalg.norm(log[-1] - log[-2]) < self.eps:

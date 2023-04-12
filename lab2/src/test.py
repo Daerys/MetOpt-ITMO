@@ -8,10 +8,10 @@ data_set = []
 
 
 def draw(Z, pts):
-    plt.title(f"{len(pts)} итераций, найденные коэффициенты {pts[-1]}")
+    plt.title(f"{len(pts)} итераций\nнайденные коэффициенты {pts[-1]}")
     pts = np.asarray(pts)
-    x1 = np.linspace(pts[:, 0].min(), pts[:, 0].max(), 100)
-    x2 = np.linspace(pts[:, 1].min(), pts[:, 1].max(), 100)
+    x1 = np.linspace(pts[:, 0].min() - 0.5 * pts[:, 0].max(), pts[:, 0].max(), 100)
+    x2 = np.linspace(pts[:, 1].min() - 0.5 * pts[:, 1].max(), pts[:, 1].max(), 100)
     x1, x2 = np.meshgrid(x1, x2)
     Z_values = np.zeros_like(x1)
     for i in range(x1.shape[0]):
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     M = 0  # batch size from below
     K = 0  # learning rate from below
     R = 0  # epoch from below
-    data_collection = ['data1.csv', 'data2.csv']
+    data_collection = ['data1.csv', 'data2.csv', 'data3.csv']
     batch_sizes = [1, 16]
     learning_rates = [1e-3, 1e-2, 1e-1, 1]
     epoches = [1e4, 1e5]
