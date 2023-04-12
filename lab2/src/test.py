@@ -39,7 +39,7 @@ if __name__ == "__main__":
     R = 1  # epoch from below
     data_collection = ['data1.csv', 'data2.csv', 'data3.csv']
     batch_sizes = [1, 16]
-    learning_rates = [1e-3, 1e-2, 1e-1, 1, 10]
+    learning_rates = [1e-4, 1e-3, 1e-2, 1e-1, 1, 10]
     epoches = [1e4, 1e5]
 
     data = pd.read_csv(data_collection[N])
@@ -48,13 +48,15 @@ if __name__ == "__main__":
 
     data_set = utils.merge(X, Y)
     X = utils.extend(X)
+    # start = np.array([100000, 100000])
     start = np.zeros(len(X[0]))
     # start = np.array([random() * 10000 for _ in range(len(X[0]))])
 
     # grad = GD.GradientDescent(batch_size=batch_sizes[M], learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
     #                          learning_rate_scheduling=utils.exponential_decay())
-    grad = GD.GradientDescent(learning_rate=0.01, max_epoch=int(epoches[R]),
-                              learning_rate_scheduling=utils.exponential_decay(0.01))
+    # grad = GD.GradientDescent(learning_rate=learning_rates[K], max_epoch=int(epoches[R]))
+    grad = GD.GradientDescent(learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+                              learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
     points, w = grad.run(data_set, start)
 
     X, Y = utils.split(data_set)

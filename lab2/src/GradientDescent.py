@@ -46,7 +46,7 @@ class GradientDescent:
             w -= self.lr * gr
 
             log.append(w.copy().ravel())
-            if np.linalg.norm(log[-1] - log[-2]) < self.eps:
+            if np.linalg.norm(gr) < self.eps or np.linalg.norm(log[-1] - log[-2]) < self.eps:
                 break
 
         return log, w
