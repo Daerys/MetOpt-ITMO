@@ -26,12 +26,11 @@ class GradientDescent:
         That's how w[-1] is variable without x_i
         """
         x, y = utils.split(X)
-        gradient = utils.MSE_gradient(x, y)
+        gradient = utils.MSE_gradient(x, y) # w - self.lr * (w / self.lr - w_new /self.lr)
         return gradient(w)
 
-    @staticmethod
-    def constant(lr, _):
-        return lr
+    def constant(self, _):
+        return self.lr
 
     def run(self, data, start_weights):
         data = np.asarray(data)
@@ -42,12 +41,12 @@ class GradientDescent:
             indices = sample(range(len(data)), self.batch_size if self.batch_size else len(data))
             X = data[indices]
 
-            self.lr = self.learning_rate_scheduling(self.lr, epoch)
-            gr = self.gradient(X, w, epoch, self.lr, log)
+            self.lr = self.learning_rate_scheduling(epoch)
+            gr = self.gradient(X, w, epoch, self.lr, log) # gr = (w / self.lr - wp * delta)
             w -= self.lr * gr
 
             log.append(w.copy().ravel())
-            if np.linalg.norm(gr) < self.eps or np.linalg.norm(log[-1] - log[-2]) < self.eps:
+            if np.linalg.norm(log[-1] - log[-2]) < self.eps:
                 break
 
         return log, w

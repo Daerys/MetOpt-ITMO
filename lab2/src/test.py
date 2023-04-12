@@ -10,8 +10,8 @@ data_set = []
 def draw(Z, pts):
     plt.title(f"{len(pts)} итераций\nнайденные коэффициенты {pts[-1]}")
     pts = np.asarray(pts)
-    x1 = np.linspace(pts[:, 0].min() - 0.5 * pts[:, 0].max(), pts[:, 0].max(), 100)
-    x2 = np.linspace(pts[:, 1].min() - 0.5 * pts[:, 1].max(), pts[:, 1].max(), 100)
+    x1 = np.linspace(pts[:, 0].min() - 0.5 * pts[:, 0].max(), pts[:, 0].max() + 0.5 * pts[:, 0].max(), 100)
+    x2 = np.linspace(pts[:, 1].min() - 0.5 * pts[:, 1].max(), pts[:, 1].max() + 0.5 * pts[:, 1].max(), 100)
     x1, x2 = np.meshgrid(x1, x2)
     Z_values = np.zeros_like(x1)
     for i in range(x1.shape[0]):
@@ -35,11 +35,11 @@ def plot(weights, set_of_points):
 if __name__ == "__main__":
     N = 1  # data set from below
     M = 0  # batch size from below
-    K = 0  # learning rate from below
-    R = 0  # epoch from below
+    K = 1  # learning rate from below
+    R = 1  # epoch from below
     data_collection = ['data1.csv', 'data2.csv', 'data3.csv']
     batch_sizes = [1, 16]
-    learning_rates = [1e-3, 1e-2, 1e-1, 1]
+    learning_rates = [1e-3, 1e-2, 1e-1, 1, 10]
     epoches = [1e4, 1e5]
 
     data = pd.read_csv(data_collection[N])
@@ -52,8 +52,9 @@ if __name__ == "__main__":
     # start = np.array([random() * 10000 for _ in range(len(X[0]))])
 
     # grad = GD.GradientDescent(batch_size=batch_sizes[M], learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
-                             # learning_rate_scheduling=utils.exponential_decay())
-    grad = GD.GradientDescent(learning_rate=learning_rates[K], max_epoch=int(epoches[R]), learning_rate_scheduling=utils.exponential_decay())
+    #                          learning_rate_scheduling=utils.exponential_decay())
+    grad = GD.GradientDescent(learning_rate=0.01, max_epoch=int(epoches[R]),
+                              learning_rate_scheduling=utils.exponential_decay(0.01))
     points, w = grad.run(data_set, start)
 
     X, Y = utils.split(data_set)
