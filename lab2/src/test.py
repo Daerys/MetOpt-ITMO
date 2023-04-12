@@ -51,8 +51,9 @@ if __name__ == "__main__":
     start = np.zeros(len(X[0]))
     # start = np.array([random() * 10000 for _ in range(len(X[0]))])
 
-    grad = GD.GradientDescent(batch_size=batch_sizes[M], learning_rate=learning_rates[K], max_epoch=int(epoches[R]))
-    # grad = GD.GradientDescent(learning_rate=learning_rates[K], max_epoch=int(epoches[R]))
+    # grad = GD.GradientDescent(batch_size=batch_sizes[M], learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+                             # learning_rate_scheduling=utils.exponential_decay())
+    grad = GD.GradientDescent(learning_rate=learning_rates[K], max_epoch=int(epoches[R]), learning_rate_scheduling=utils.exponential_decay())
     points, w = grad.run(data_set, start)
 
     X, Y = utils.split(data_set)

@@ -1,3 +1,5 @@
+from cmath import exp
+
 import numpy as np
 
 
@@ -39,6 +41,15 @@ def extend(X):
 def split(X):
     X = np.asarray(X)
     return extend(X[:, :-1]), X[:, -1:]
+
+
+def exponential_decay():
+    def foo(old_lr, t):
+        k = 0.001
+        new_lr = old_lr * np.exp(-k * t)
+        return new_lr
+
+    return foo
 
 
 # additional task

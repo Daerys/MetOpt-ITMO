@@ -12,7 +12,7 @@ class GradientDescent:
                  eps=1e-4):
         """
         :NOTE: We'll make a child classes which will
-        override gradient function and learning_rate_scheduling will bw passed to init
+        override gradient function and learning_rate_scheduling will be passed to init
         """
         self.batch_size = batch_size
         self.lr = learning_rate if learning_rate else 1.0
@@ -30,7 +30,7 @@ class GradientDescent:
         return gradient(w)
 
     @staticmethod
-    def constant(lr):
+    def constant(lr, _):
         return lr
 
     def run(self, data, start_weights):
@@ -38,29 +38,26 @@ class GradientDescent:
         start_weights = np.asarray(start_weights)
         w = start_weights.astype(np.float64).reshape(-1, 1)
         log = [start_weights]
-        for _ in range(self.max_epoch):
+        for epoch in range(self.max_epoch):
             indices = sample(range(len(data)), self.batch_size if self.batch_size else len(data))
             X = data[indices]
 
             gr = self.gradient(X, w)
-            w -= self.learning_rate_scheduling(self.lr) * gr
+            w -= self.learning_rate_scheduling(self.lr, epoch) * gr
 
             log.append(w.copy().ravel())
             if np.linalg.norm(gr) < self.eps or np.linalg.norm(log[-1] - log[-2]) < self.eps:
                 break
+
         return log, w
 
 
 # class field end
 
+
 """
-Example of tasks 2-3:
-task2:
-def exp():
-    def foo(old_lr)
-        IMPLEMENTATION
-        return new_lr
-    return foo
+
+
 
 task3:
 class BruhGradient(GradientDescent):
