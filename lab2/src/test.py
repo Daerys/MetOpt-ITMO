@@ -33,7 +33,7 @@ def plot(weights, set_of_points):
 
 
 if __name__ == "__main__":
-    N = 1  # data set from below
+    N = 2  # data set from below
     M = 0  # batch size from below
     K = 1  # learning rate from below
     R = 1  # epoch from below
@@ -52,8 +52,8 @@ if __name__ == "__main__":
     start = np.zeros(len(X[0]))
     # start = np.array([random() * 10000 for _ in range(len(X[0]))])
 
-    # grad = GD.GradientDescent(batch_size=batch_sizes[M], learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
-    #                          learning_rate_scheduling=utils.exponential_decay())
+    # grad = GD.GradientDescent(batch_size=60, learning_rate=1e-4, max_epoch=int(epoches[R]),
+    #                          learning_rate_scheduling=utils.exponential_decay(1e-4))
     # grad = GD.GradientDescent(learning_rate=learning_rates[K], max_epoch=int(epoches[R]))
     # grad = GD.GradientDescent(learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
     #                          learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
@@ -61,11 +61,16 @@ if __name__ == "__main__":
     #                       learning_rate_scheduling=utils.exponential_decay(learning_rates[0]))
     # grad = GD.AdagradGradientDescent(learning_rate=learning_rates[0], max_epoch=int(epoches[R]),
     #                         learning_rate_scheduling=utils.exponential_decay(learning_rates[0]))
-    grad = GD.AdamGradientDescent(learning_rate=learning_rates[0], max_epoch=int(epoches[R]),
-                                     learning_rate_scheduling=utils.exponential_decay(learning_rates[0]))
+    # grad = GD.AdamGradientDescent(learning_rate=learning_rates[0], max_epoch=int(epoches[R]),
+    #                                 learning_rate_scheduling=utils.exponential_decay(learning_rates[0]))
+    grad = GD.MomentumGradientDescent(batch_size=60, learning_rate=1e-4, max_epoch=10000,
+                                      learning_rate_scheduling=utils.exponential_decay(1e-4), gamma=1e-8)
+    # grad = GD.NesterovGradientDescent(batch_size=60, learning_rate=1e-4, max_epoch=10000,
+    #                                   learning_rate_scheduling=utils.exponential_decay(1e-4), gamma=1e-10)
     points, w = grad.run(data_set, start)
 
     X, Y = utils.split(data_set)
     mse = utils.MSE(X, Y)
     plot(w, data_set)
+    print(len(points))
     draw(mse, points)
