@@ -2,6 +2,7 @@ from cmath import exp
 
 import numpy as np
 
+K = 16
 
 def MSE(X, y):
     def foo(weights):
@@ -52,24 +53,43 @@ def exponential_decay(init_lr):
     return foo
 
 
-# additional task
-def MSE_poly(X: np.array, y: np.array):
-    X = np.vander(X, len(X[0]))
+def MSE_poly(X: np.array, y: np.array, k):
+    A = np.array([polynomial(x, k) for x in X])
 
     def foo(weights):
         weights = np.asarray(weights)
-        y_pred = X @ weights.reshape(-1, 1)
+        y_pred = A @ weights.reshape(-1, 1)
         return np.sum((y_pred - y) ** 2)
 
     return foo
 
 
-def MSE_poly_gradient(X: np.array, y: np.array):
-    X = np.vander(X, len(X[0]))
+def MSE_poly_gradient(X: np.array, y: np.array, k):
+    A = np.array([polynomial(x, k) for x in X])
 
     def foo(weights):
         weights = np.asarray(weights)
-        y_pred = X @ weights.reshape(-1, 1)
-        return 2 * X.T @ (y_pred - y)
+        y_pred = A @ weights.reshape(-1, 1)
+        return 2 * A.T @ (y_pred - y)
+
+    return foo
+
+
+def polynomial(x, k):
+    X = []
+    for i in range(k):
+        X.append(x ** (i + 1))
+    X.append(1)
+    return np.array(X)
+
+
+def poly_fun(w):
+    w = np.squeeze(w)
+
+    def foo(x):
+        ans = w[-1]
+        for i in range(len(w) - 1):
+            ans += w[i] * (x ** (i + 1))
+        return ans
 
     return foo

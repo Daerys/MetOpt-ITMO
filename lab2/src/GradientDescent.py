@@ -3,6 +3,8 @@ from random import sample
 import numpy as np
 import lab2.src.lab_2_utils as utils
 
+L1 = 100000
+L2 = 0.05
 
 # class field
 class GradientDescent:
@@ -21,14 +23,20 @@ class GradientDescent:
         self.learning_rate_scheduling = learning_rate_scheduling if learning_rate_scheduling else self.constant
         self.eps = eps
 
+
     def gradient(self, X, w, _, __, ___):
         """
         :NOTE: w(weights) = len(X[0]). We'll count X[i][-1] = 1 and "expected value" is X[i][-1]
         That's how w[-1] is variable without x_i
         """
         x, y = utils.split(X)
-        gradient = utils.MSE_gradient(x, y)  # w - self.lr * (w / self.lr - w_new /self.lr)
-        return gradient(w)
+        x = np.squeeze(x[:, :-1])
+        gradient = utils.MSE_poly_gradient(x, y, utils.K)
+        # gradient = utils.MSE_gradient(x, y)  # w - self.lr * (w / self.lr - w_new /self.lr)
+        return np.array(gradient(w))
+        # return np.array(gradient(w) + L2 * 2 * w)
+        # return np.array(gradient(w) + L1 * np.sign(w))
+    #    return  np.array(gradient(w) + L1 * np.sign(w) + L2 * 2 * w )
 
     def constant(self, _):
         return self.lr
@@ -53,19 +61,6 @@ class GradientDescent:
         return log, w
 
 
-# class field end
-
-
-"""
-
-
-
-task3:
-class BruhGradient(GradientDescent):
-    def __init__(...) <- if needed
-
-    def gradient(...) <- overriding old gradient
-"""
 
 
 class MomentumGradientDescent(GradientDescent):
@@ -152,7 +147,9 @@ class RMSPropGradientDescent(GradientDescent):
 
         for j in range(len(w)):
             w[j] = w[j] - (lr * gradient[j] / (math.sqrt(self.ema_grad[j]) + 1e-8))
-        return gradient
+        # return gradient
+        return
+
 
 
 class AdamGradientDescent(GradientDescent):
