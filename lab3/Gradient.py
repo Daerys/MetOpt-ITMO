@@ -42,8 +42,8 @@ class GradientDescent:
 
     def run(self):
         data_size = len(self.regression.data_set)
-        w = self.regression.coefficients
-        log = [w.copy]
+        w = self.regression.get_coefficients().copy()
+        log = [w.copy()]
         for epoch in range(self.max_epoch):
             indices = sample(range(data_size), self.batch_size if self.batch_size else data_size)
 
@@ -52,8 +52,8 @@ class GradientDescent:
             w -= self.lr * gr
 
             log.append(w.copy().ravel())
-            # if np.linalg.norm(gr) < self.eps or np.linalg.norm(log[-1] - log[-2]) < self.eps:
-            #     break
+            if np.linalg.norm(gr) < self.eps or np.linalg.norm(log[-1] - log[-2]) < self.eps:
+                break
 
         return log, w
 
