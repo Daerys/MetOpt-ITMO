@@ -35,3 +35,10 @@ class PolynomialRegression:
         X = np.array([polynomial(x, self.degree) for x in X])
         y_predict = X @ w
         return 2 * X.T @ (y_predict - y)
+
+    def getR(self, w):
+        y_predict = self.MSE_X @ w
+        return self.Y - y_predict
+
+    def Jacobi(self, _):
+        return np.asarray([np.asarray([x ** (i + 1) for i in range(self.degree)] + [1]) for x in self.X])

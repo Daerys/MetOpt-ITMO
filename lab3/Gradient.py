@@ -3,6 +3,9 @@ from random import sample
 
 import numpy as np
 
+L1 = 10
+L2 = 6
+
 
 class GradientDescent:
     def __init__(self, Regression, batch_size=None,
@@ -21,12 +24,12 @@ class GradientDescent:
         self.learning_rate_scheduling = learning_rate_scheduling if learning_rate_scheduling else self.constant
         self.eps = eps
 
-    def gradient(self, indices, w, _, __, ___):
+    def gradient(self, indexes, w, _, __, ___):
         """
         :NOTE: w(weights) = len(X[0]). We'll count X[i][-1] = 1 and "expected value" is X[i][-1]
         That's how w[-1] is variable without x_i
         """
-        return self.regression.MSE_gradient(w, indices)
+        return self.regression.MSE_gradient(w, indexes) + L2 * 2 * w
         # x, y = utils.split(X)
         # x = np.squeeze(x[:, :-1])
         # gradient = utils.MSE_poly_gradient(x, y, utils.K)
@@ -45,10 +48,10 @@ class GradientDescent:
         w = self.regression.get_coefficients().copy()
         log = [w.copy()]
         for epoch in range(self.max_epoch):
-            indices = sample(range(data_size), self.batch_size if self.batch_size else data_size)
+            indexes = sample(range(data_size), self.batch_size if self.batch_size else data_size)
 
             self.lr = self.learning_rate_scheduling(epoch)
-            gr = self.gradient(indices, w, epoch, self.lr, log)  # gr = (w / self.lr - wp * delta)
+            gr = self.gradient(indexes, w, epoch, self.lr, log)  # gr = (w / self.lr - wp * delta)
             w -= self.lr * gr
 
             log.append(w.copy().ravel())
@@ -59,7 +62,8 @@ class GradientDescent:
 
 
 class MomentumGradientDescent(GradientDescent):
-    def __init__(self, Regression, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,
+    def __init__(self, Regression, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None,
+                 eps=1e-4,
                  gamma=0.0001):
         super().__init__(Regression, batch_size, learning_rate, max_epoch, learning_rate_scheduling, eps)
         self.gamma = gamma
@@ -74,7 +78,8 @@ class MomentumGradientDescent(GradientDescent):
 
 
 class NesterovGradientDescent(GradientDescent):
-    def __init__(self, Regression, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,
+    def __init__(self, Regression, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None,
+                 eps=1e-4,
                  gamma=0.0001):
         super().__init__(Regression, batch_size, learning_rate, max_epoch, learning_rate_scheduling, eps)
         self.gamma = gamma
@@ -91,7 +96,8 @@ class NesterovGradientDescent(GradientDescent):
 
 
 class AdagradGradientDescent(GradientDescent):
-    def __init__(self, Regression, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4):
+    def __init__(self, Regression, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None,
+                 eps=1e-4):
         super().__init__(Regression, batch_size, learning_rate, max_epoch, learning_rate_scheduling, eps)
         self.log = None
         self.G = None
@@ -117,7 +123,8 @@ def exponential_moving_average(q_last, ema_coefficient, q_one):
 
 
 class RMSPropGradientDescent(GradientDescent):
-    def __init__(self, Regression, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,
+    def __init__(self, Regression, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None,
+                 eps=1e-4,
                  beta=0.1):
         super().__init__(Regression, batch_size, learning_rate, max_epoch, learning_rate_scheduling, eps)
         self.beta = beta
@@ -139,7 +146,8 @@ class RMSPropGradientDescent(GradientDescent):
 
 
 class AdamGradientDescent(GradientDescent):
-    def __init__(self, Regression, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None, eps=1e-4,
+    def __init__(self, Regression, batch_size=None, learning_rate=None, max_epoch=100, learning_rate_scheduling=None,
+                 eps=1e-4,
                  beta1=0.1, beta2=0.1):
         super().__init__(Regression, batch_size, learning_rate, max_epoch, learning_rate_scheduling, eps)
         self.beta1 = beta1
@@ -165,3 +173,22 @@ class AdamGradientDescent(GradientDescent):
             v = self.ema_grad_sqr[j] / (1 - math.pow(self.beta2, p))
             w[j] = w[j] - (lr * m / (math.sqrt(v) + 1e-8))
         return gradient
+
+
+class GaussNewton(GradientDescent):
+    def __init__(self, Regression, batch_size=None,
+                 learning_rate=None,
+                 max_epoch=100,
+                 learning_rate_scheduling=None,
+                 eps=1e-4):
+        super().__init__(Regression, batch_size,
+                         learning_rate,
+                         max_epoch,
+                         learning_rate_scheduling,
+                         eps)
+
+    def gradient(self, indexes, w, _, __, ___):
+        J = self.regression.Jacobi(w).copy()
+        r = self.regression.getR(w).copy()
+        # np.array(gradient(w) + L1 * np.sign(w))
+        return -(np.linalg.inv(J.T @ J)) @ J.T @ r
