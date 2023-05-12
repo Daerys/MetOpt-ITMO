@@ -23,6 +23,10 @@ class PolynomialRegression:
     def get_coefficients(self):
         return self.coefficients
 
+    def draw_fun(self, w):
+        self.set_coefficients(w)
+        return self.fun
+
     def fun(self, x: float):
         return np.sum([self.coefficients[i] * x ** (i + 1) for i in range(self.degree)] + [self.coefficients[-1]])
 

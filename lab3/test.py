@@ -3,9 +3,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import lab3.Gradient as G
 import lab3.PolynomialRegression as Poly
+import lab3.ExponentialRegression as Exp
 import lab2.src.lab_2_utils as utils
 
 data_set = []
+
+def poly_hz(w, Z , set_of_points=[[0, 1], [4, 5], [2, 6]]):
+    set_of_points = np.asarray(set_of_points)
+    plt.plot(np.asarray(set_of_points[:, :-1]),
+             np.asarray(set_of_points[:, -1:]), 'o')
+    X = np.linspace(min(set_of_points[:, :-1]), max(set_of_points[:, :-1]), 100)
+    Y = Z(X)
+    plt.plot(X, Y)
+    plt.show()
+    print(w)
 
 
 def poly_draw(w, set_of_points=[[0, 1], [4, 5], [2, 6]]):
@@ -46,14 +57,14 @@ def plot(weights, set_of_points):
 
 
 if __name__ == "__main__":
-    N = 3  # data set from below
+    N = 4  # data set from below
     M = 0  # batch size from below
     K = 0  # learning rate from below
     R = 0  # epoch from below
-    data_collection = []
-    batch_sizes = []
-    learning_rates = []
-    epoches = []
+    data_collection = ['data1.csv', 'data2.csv', 'data3.csv', 'datapoly1', 'dataexp.csv']
+    batch_sizes = [25, 50]
+    learning_rates = [1.5e-10, 5e-5, 1e-3, 1e-2, 1e-1, 1.5, 2]
+    epoches = [1e5, 1e4, 1e5]
 
     data = pd.read_csv(data_collection[N])
     X = np.asarray(data['x'])
@@ -61,18 +72,22 @@ if __name__ == "__main__":
 
     data_set = utils.merge(X, Y)
 
-    poly = Poly.PolynomialRegression(data_set, 10)
-    # gradient = G.GradientDescent(Regression=poly, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+    # poly = Poly.PolynomialRegression(data_set, 11)
+    regr = Exp.ExponentialRegression(data_set)
+    # print(poly.Jacobi(0))
+    # gradient = G.GaussNewton(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+    #                          learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
+    # gradient = G.GradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
     #                              learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
-    gradient = G.RMSPropGradientDescent(Regression=poly, learning_rate=learning_rates[0], max_epoch=int(epoches[R]),
-                          learning_rate_scheduling=utils.exponential_decay(learning_rates[0]))
-    # gradient = G.AdagradGradientDescent(Regression=poly, learning_rate=learning_rates[0], max_epoch=int(epoches[R]),
-    #                         learning_rate_scheduling=utils.exponential_decay(learning_rates[0]))
-    # gradient = G.AdamGradientDescent(Regression=poly, learning_rate=learning_rates[0], max_epoch=int(epoches[R]),
-    #                                 learning_rate_scheduling=utils.exponential_decay(learning_rates[0]))
-    # gradient = G.MomentumGradientDescent(Regression=poly, batch_size=60, learning_rate=1e-4, max_epoch=10000,
+    # gradient = G.RMSPropGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+    #                       learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
+    # gradient = G.AdagradGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+    #                                     learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
+    gradient = G.AdamGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+                                    learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
+    # gradient = G.MomentumGradientDescent(Regression=regr, batch_size=60, learning_rate=1e-4, max_epoch=10000,
     #                                   learning_rate_scheduling=utils.exponential_decay(1e-4), gamma=1e-8)
-    # gradient = G.NesterovGradientDescent(Regression=poly, batch_size=60, learning_rate=1e-4, max_epoch=10000,
+    # gradient = G.NesterovGradientDescent(Regression=regr, batch_size=60, learning_rate=1e-4, max_epoch=10000,
     #                                   learning_rate_scheduling=utils.exponential_decay(1e-4), gamma=1e-10)
     points, w = gradient.run()
-    poly_draw(w, data_set)
+    poly_hz(w, regr.draw_fun(w), data_set)
