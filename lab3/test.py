@@ -9,6 +9,7 @@ import lab2.src.lab_2_utils as utils
 data_set = []
 
 def poly_hz(w, Z , set_of_points=[[0, 1], [4, 5], [2, 6]]):
+    plt.title(f"найденные коэффициенты {w}")
     set_of_points = np.asarray(set_of_points)
     plt.plot(np.asarray(set_of_points[:, :-1]),
              np.asarray(set_of_points[:, -1:]), 'o')
@@ -75,19 +76,20 @@ if __name__ == "__main__":
     # poly = Poly.PolynomialRegression(data_set, 11)
     regr = Exp.ExponentialRegression(data_set)
     # print(poly.Jacobi(0))
-    # gradient = G.GaussNewton(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
-    #                          learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
+    gradient = G.GaussNewton(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+                             learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
     # gradient = G.GradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
     #                              learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
     # gradient = G.RMSPropGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
     #                       learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
     # gradient = G.AdagradGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
     #                                     learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
-    gradient = G.AdamGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
-                                    learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
+    # gradient = G.AdamGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+    #                                 learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
     # gradient = G.MomentumGradientDescent(Regression=regr, batch_size=60, learning_rate=1e-4, max_epoch=10000,
     #                                   learning_rate_scheduling=utils.exponential_decay(1e-4), gamma=1e-8)
     # gradient = G.NesterovGradientDescent(Regression=regr, batch_size=60, learning_rate=1e-4, max_epoch=10000,
     #                                   learning_rate_scheduling=utils.exponential_decay(1e-4), gamma=1e-10)
     points, w = gradient.run()
     poly_hz(w, regr.draw_fun(w), data_set)
+    draw(regr.MSE, points)
