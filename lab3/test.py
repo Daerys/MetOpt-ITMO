@@ -60,11 +60,11 @@ def plot(weights, set_of_points):
 if __name__ == "__main__":
     N = 4  # data set from below
     M = 0  # batch size from below
-    K = 0  # learning rate from below
+    K = 1  # learning rate from below // gauss - 4
     R = 0  # epoch from below
     data_collection = ['data1.csv', 'data2.csv', 'data3.csv', 'datapoly1', 'dataexp.csv']
     batch_sizes = [25, 50]
-    learning_rates = [1.5e-10, 5e-5, 1e-3, 1e-2, 1e-1, 1.5, 2]
+    learning_rates = [1.5e-10, 1.5e-4, 1e-3, 1e-2, 1.8e-1, 1.5, 2]
     epoches = [1e5, 1e4, 1e5]
 
     data = pd.read_csv(data_collection[N])
@@ -73,19 +73,19 @@ if __name__ == "__main__":
 
     data_set = utils.merge(X, Y)
 
-    # poly = Poly.PolynomialRegression(data_set, 11)
+    # regr = Poly.PolynomialRegression(data_set, 11)
     regr = Exp.ExponentialRegression(data_set)
     # print(poly.Jacobi(0))
-    gradient = G.GaussNewton(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
-                             learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
+    # gradient = G.GaussNewton(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+    #                          learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
     # gradient = G.GradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
     #                              learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
     # gradient = G.RMSPropGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
     #                       learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
     # gradient = G.AdagradGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
     #                                     learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
-    # gradient = G.AdamGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
-    #                                 learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
+    gradient = G.AdamGradientDescent(Regression=regr, learning_rate=learning_rates[K], max_epoch=int(epoches[R]),
+                                    learning_rate_scheduling=utils.exponential_decay(learning_rates[K]))
     # gradient = G.MomentumGradientDescent(Regression=regr, batch_size=60, learning_rate=1e-4, max_epoch=10000,
     #                                   learning_rate_scheduling=utils.exponential_decay(1e-4), gamma=1e-8)
     # gradient = G.NesterovGradientDescent(Regression=regr, batch_size=60, learning_rate=1e-4, max_epoch=10000,
