@@ -42,3 +42,6 @@ class ExponentialRegression:
         a, b = self.coefficients
         return np.asarray([[np.exp(b * x), a * x * np.exp(b * x)] for x in self.X])
 
+    def Heussan(self, _):
+        a, b = self.coefficients
+        return np.asarray([[0, a * x * x * np.exp(b * x)] for x in self.X])
