@@ -38,10 +38,10 @@ class ExponentialRegression:
         y_predict = a * np.exp(b * self.X)
         return self.Y - y_predict
 
-    def Jacobi(self, _):
-        a, b = self.coefficients
+    def Jacobi(self, w):
+        a, b = w
         return np.asarray([[np.exp(b * x), a * x * np.exp(b * x)] for x in self.X])
 
-    def Heussan(self, _):
-        a, b = self.coefficients
+    def Heussan(self, w):
+        a, b = w
         return np.asarray([[0, a * x * x * np.exp(b * x)] for x in self.X])
