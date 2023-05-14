@@ -29,7 +29,7 @@ class GradientDescent:
         :NOTE: w(weights) = len(X[0]). We'll count X[i][-1] = 1 and "expected value" is X[i][-1]
         That's how w[-1] is variable without x_i
         """
-        return self.regression.MSE_gradient(w, indexes) + L2 * 2 * w
+        return self.regression.MSE_gradient(w) + L2 * 2 * w
         # x, y = utils.split(X)
         # x = np.squeeze(x[:, :-1])
         # gradient = utils.MSE_poly_gradient(x, y, utils.K)
@@ -70,7 +70,7 @@ class MomentumGradientDescent(GradientDescent):
 
     def gradient(self, indexes, w, epoch, lr, log):
         old_w = w.copy()
-        gradient = self.regression.MSE_gradient(w, indexes)
+        gradient = self.regression.MSE_gradient(w)
         for j in range(len(w)):
             previous = log[-1][j] * self.gamma
             w[j] = w[j] - (previous + self.lr * gradient[j])
@@ -88,7 +88,7 @@ class NesterovGradientDescent(GradientDescent):
         new_coefficients = w.copy()
         for j in range(len(w)):
             new_coefficients[j] -= log[-1][j] * self.gamma
-        new_gradient = self.regression.MSE_gradient(new_coefficients, indexes)
+        new_gradient = self.regression.MSE_gradient(new_coefficients)
         for j in range(len(w)):
             previous = log[-1][j] * self.gamma
             w[j] = w[j] - (previous + self.lr * new_gradient[j])
@@ -113,7 +113,7 @@ class AdagradGradientDescent(GradientDescent):
         for g in self.G:
             result.append(1e-1 / math.sqrt(g + 1e-8))
         self.log = result
-        gradient = self.regression.MSE_gradient(w, indexes)
+        gradient = self.regression.MSE_gradient(w)
 
         return gradient
 
@@ -131,7 +131,7 @@ class RMSPropGradientDescent(GradientDescent):
         self.ema_grad = None
 
     def gradient(self, indexes, w, epoch, lr, log):
-        gradient = self.regression.MSE_gradient(w, indexes)
+        gradient = self.regression.MSE_gradient(w)
 
         if self.ema_grad is None:
             self.ema_grad = [0.0 for _ in range(len(w))]
@@ -156,7 +156,7 @@ class AdamGradientDescent(GradientDescent):
         self.ema_grad_sqr = None
 
     def gradient(self, indexes, w, epoch, lr, log):
-        gradient = self.regression.MSE_gradient(w, indexes)
+        gradient = self.regression.MSE_gradient(w)
 
         if self.ema_grad is None:
             self.ema_grad = [0.0 for _ in range(len(w))]

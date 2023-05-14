@@ -25,8 +25,8 @@ class ExponentialRegression:
         y_predict = a * np.exp(b * self.X)
         return np.sum((y_predict - self.Y) ** 2)
 
-    def MSE_gradient(self, w: np.array, indexes):
-        X, y = self.data_set[indexes].T
+    def MSE_gradient(self, w: np.array):
+        X, y = self.data_set.T
         a, b = w
         y_predict = a * np.exp(b * X)
         gradient_a = 2 * np.sum((y_predict - y) * np.exp(b * X))
