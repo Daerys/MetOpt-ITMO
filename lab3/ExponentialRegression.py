@@ -42,6 +42,12 @@ class ExponentialRegression:
         a, b = w
         return np.asarray([[np.exp(b * x), a * x * np.exp(b * x)] for x in self.X])
 
-    def Heussan(self, w):
+    def Heussan(self, w: np.array):
+        X, y = self.data_set.T
         a, b = w
-        return np.asarray([[0, a * x * x * np.exp(b * x)] for x in self.X])
+        y_predict = a * np.exp(b * X)
+        hessian_aa = 2 * np.sum(np.exp(2 * b * X))
+        hessian_ab = 2 * np.sum(a * X * np.exp(2 * b * X))
+        hessian_ba = 2 * np.sum(a * X * np.exp(2 * b * X))
+        hessian_bb = 2 * np.sum(a * X * X * np.exp(2 * b * X))
+        return np.array([[hessian_aa, hessian_ab], [hessian_ba, hessian_bb]])
