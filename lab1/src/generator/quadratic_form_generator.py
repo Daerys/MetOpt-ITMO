@@ -8,7 +8,7 @@ def generate_random_orthogonal_matrix(n: int):
 
 
 def generate_diagonal_matrix(k_min: float, k_max: float, n: int):
-    eigenvalues = [k_min] + sorted([np.random.uniform(k_min, k_max)]) * (n - 2) + [k_max]
+    eigenvalues = [k_min] + [np.random.uniform(k_min, k_max, n - 2)] + [k_max]
     return np.diag(eigenvalues)
 
 
