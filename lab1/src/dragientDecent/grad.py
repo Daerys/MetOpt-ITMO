@@ -98,7 +98,7 @@ class GradientDescent:
 
         approximation_resolution = 5e-2
         left = 1e-10  # min learning rate
-        right = 2  # max learning rate
+        right = self.learning_rate  # max learning rate
         stop = False
         can_make_a_step = False
 
