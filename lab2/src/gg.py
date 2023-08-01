@@ -18,7 +18,7 @@ def f(x):
 # x = np.linspace(0, 10, 10)
 # y = x + 5 * np.random.randn(10)
 points = generate_points(f, (-10, 10), 0.5)
-with open("../../lab3/dataexp.csv", "w") as f:
+with open("../../lab3/src/dataexp.csv", "w") as f:
     f.write("x,y\n")
     for i in range(10):
         x, y = next(points)
